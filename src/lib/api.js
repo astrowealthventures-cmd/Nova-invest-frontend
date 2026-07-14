@@ -1,15 +1,12 @@
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL || "https://nova-invest-backend-production.up.railway.app";
 
-if (!BACKEND_URL) {
-  // Fails loudly in the console at startup instead of quietly resolving
-  // every request against the frontend's own domain later.
-  console.error(
-    "VITE_BACKEND_URL is not set. API requests will fail. " +
-    "Check your environment variables and redeploy."
-  );
-}
+console.log(
+  `[api] using backend: ${BACKEND_URL} (source: ${import.meta.env.VITE_BACKEND_URL ? "env var" : "hardcoded fallback"
+  })`
+);
 
 export const API = `${BACKEND_URL}/api`;
 
