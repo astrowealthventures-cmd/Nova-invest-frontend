@@ -1,12 +1,42 @@
 import axios from "axios";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+if (!BACKEND_URL) {
+  // Fails loudly in the console at startup instead of quietly resolving
+  // every request against the frontend's own domain later.
+  console.error(
+    "VITE_BACKEND_URL is not set. API requests will fail. " +
+    "Check your environment variables and redeploy."
+  );
+}
+
 export const API = `${BACKEND_URL}/api`;
 
 export const http = axios.create({
   baseURL: API,
   withCredentials: true,
 });
+
+// Guards against a specific misconfiguration failure mode: if VITE_BACKEND_URL
+// is wrong/unset, requests resolve to a relative path on the frontend's own
+// domain. Since the SPA rewrite (vercel.json) serves index.html for any
+// unmatched path, that request "succeeds" with a 200 and an HTML body instead
+// of failing outright - so pages then try to .map() over an HTML string and
+// crash. This turns that silent failure into a normal caught error instead.
+http.interceptors.response.use(
+  (response) => {
+    if (typeof response.data === "string" && response.data.trim().startsWith("<")) {
+      return Promise.reject(
+        new Error(
+          "Received HTML instead of JSON from the API - VITE_BACKEND_URL is likely misconfigured."
+        )
+      );
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
 
 export function fmtError(detail) {
   if (detail == null) return "Something went wrong. Please try again.";
