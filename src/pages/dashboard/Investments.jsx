@@ -20,7 +20,7 @@ export default function Investments() {
         <Link
           to="/dashboard/plans"
           data-testid="investments-new-btn"
-          className="bg-[#F0A83E] text-black font-semibold px-4 py-2.5 hover:bg-[#FFBC5C] transition-colors glow-btn"
+          className="bg-[#C8102E] text-white font-semibold px-4 py-2.5 hover:bg-[#E01B3D] transition-colors glow-btn"
         >
           + New investment
         </Link>
@@ -29,7 +29,7 @@ export default function Investments() {
       {items.length === 0 ? (
         <div className="hairline bg-[#0F0F0F] p-16 text-center">
           <div className="text-zinc-400">You don't have any investments yet.</div>
-          <Link to="/dashboard/plans" className="mt-4 inline-block text-[#F0A83E] hover:underline font-mono text-sm">
+          <Link to="/dashboard/plans" className="mt-4 inline-block text-[#C8102E] hover:underline font-mono text-sm">
             Explore plans →
           </Link>
         </div>
@@ -53,7 +53,7 @@ export default function Investments() {
                 </div>
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">Earnings</div>
-                  <div className="font-mono font-bold mt-1 text-[#F0A83E]">+{money(inv.earnings)}</div>
+                  <div className="font-mono font-bold mt-1 text-[#C8102E]">+{money(inv.earnings)}</div>
                 </div>
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-mono">Daily ROI</div>
@@ -67,7 +67,7 @@ export default function Investments() {
                 </div>
                 <div className="h-1.5 bg-white/5 overflow-hidden">
                   <div
-                    className="h-full bg-[#F0A83E] transition-all"
+                    className="h-full bg-[#C8102E] transition-all"
                     style={{ width: `${Math.min(100, inv.progress_pct)}%` }}
                   />
                 </div>

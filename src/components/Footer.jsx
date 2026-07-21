@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2">
             <div className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-none">
-              <span className="text-[#F0A83E]">AstroWealthVentures</span>
+              <span className="text-[#C8102E]">AstroWealthVentures</span>
               <br />
             </div>
             <p className="mt-4 text-zinc-500 text-sm max-w-xs">
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-zinc-600">
-          <div className="font-mono">© {new Date().getFullYear()} NOVA·INVEST — All rights reserved.</div>
+          <div className="font-mono">© {new Date().getFullYear()} AstroWealthAdventures — All rights reserved.</div>
           <div className="font-mono">Built on trust. Powered by code.</div>
         </div>
       </div>

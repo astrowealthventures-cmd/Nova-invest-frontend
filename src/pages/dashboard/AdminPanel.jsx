@@ -60,7 +60,7 @@ export default function AdminPanel() {
                       <button
                         onClick={() => act(d.id, "approve")}
                         data-testid={`admin-approve-${d.id}`}
-                        className="px-3 py-1 bg-[#F0A83E] text-black text-xs font-semibold hover:bg-[#FFBC5C]"
+                        className="px-3 py-1 bg-[#C8102E] text-white text-xs font-semibold hover:bg-[#E01B3D]"
                       >
                         Approve
                       </button>

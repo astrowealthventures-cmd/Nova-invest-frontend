@@ -1,0 +1,19 @@
+<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="28" height="28" fill="#C8102E" rx="6" />
+    <!-- helmet shell -->
+    <circle cx="14" cy="14" r="12.5" stroke="white" stroke-width="1.4" />
+    <!-- visor -->
+    <path
+        d="M6.2 13.6C6.2 9.4 9.7 6 14 6s7.8 3.4 7.8 7.6c0 1-.8 1.8-1.8 1.8H8c-1 0-1.8-.8-1.8-1.8Z"
+        fill="white"
+    />
+    <!-- visor reflection -->
+    <path
+        d="M9.6 12.4c.5-2 2.2-3.4 4.4-3.4"
+        stroke="#C8102E"
+        stroke-width="1.1"
+        stroke-linecap="round"
+    />
+    <!-- neck seal -->
+    <rect x="10.5" y="20.4" width="7" height="2" rx="1" fill="white" />
+</svg>

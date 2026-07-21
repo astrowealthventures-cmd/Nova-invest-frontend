@@ -42,7 +42,7 @@ export default function Overview() {
           {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
         </div>
         <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight mt-1">
-          Welcome back, <span className="text-[#F0A83E]">{user?.name?.split(" ")[0]}</span>
+          Welcome back, <span className="text-[#C8102E]">{user?.name?.split(" ")[0]}</span>
         </h1>
       </div>
 
@@ -60,7 +60,7 @@ export default function Overview() {
             <div className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Portfolio value</div>
             <div className="font-mono text-3xl font-bold mt-1">{money(summary.balance + summary.invested + summary.earnings)}</div>
           </div>
-          <div className="flex items-center gap-1 text-[#F0A83E] font-mono text-sm">
+          <div className="flex items-center gap-1 text-[#C8102E] font-mono text-sm">
             <TrendUp size={16} weight="bold" /> +{summary.total_deposits > 0 ? ((summary.earnings / (summary.total_deposits || 1)) * 100).toFixed(2) : "0.00"}% all-time
           </div>
         </div>
@@ -69,8 +69,8 @@ export default function Overview() {
             <AreaChart data={chart} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
               <defs>
                 <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#F0A83E" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="#F0A83E" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#C8102E" stopOpacity={0.5} />
+                  <stop offset="100%" stopColor="#C8102E" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="date" tick={{ fill: "#52525b", fontSize: 11, fontFamily: "JetBrains Mono" }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
@@ -86,7 +86,7 @@ export default function Overview() {
                 labelStyle={{ color: "#a1a1aa" }}
                 formatter={(v) => [`$${Number(v).toLocaleString()}`, "Value"]}
               />
-              <Area type="monotone" dataKey="value" stroke="#F0A83E" strokeWidth={2} fill="url(#chartGrad)" />
+              <Area type="monotone" dataKey="value" stroke="#C8102E" strokeWidth={2} fill="url(#chartGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -107,7 +107,7 @@ export default function Overview() {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-sm">{money(inv.amount_usd)}</div>
-                  <div className="text-xs text-[#F0A83E] font-mono">+{money(inv.earnings)}</div>
+                  <div className="text-xs text-[#C8102E] font-mono">+{money(inv.earnings)}</div>
                 </div>
               </div>
             ))}
@@ -120,7 +120,7 @@ export default function Overview() {
             {txs.slice(0, 5).map((t) => (
               <div key={t.id} className="flex items-center justify-between py-2 text-sm border-b border-white/5 last:border-b-0" data-testid={`tx-row-${t.id}`}>
                 <div className="flex items-center gap-3">
-                  {t.type === "deposit" && <ArrowDownRight size={16} className="text-[#F0A83E]" />}
+                  {t.type === "deposit" && <ArrowDownRight size={16} className="text-[#C8102E]" />}
                   {t.type === "withdraw" && <ArrowUpRight size={16} className="text-[#FF9500]" />}
                   {t.type === "invest" && <TrendUp size={16} className="text-blue-400" />}
                   <div>
@@ -143,9 +143,9 @@ export default function Overview() {
 
 function StatCard({ label, value, positive, accent, big, testid }) {
   return (
-    <div className={`hairline p-6 transition-colors ${accent ? "bg-gradient-to-br from-[#F0A83E]/10 to-transparent" : "bg-[#0F0F0F]"}`} data-testid={testid}>
+    <div className={`hairline p-6 transition-colors ${accent ? "bg-gradient-to-br from-[#C8102E]/10 to-transparent" : "bg-[#0F0F0F]"}`} data-testid={testid}>
       <div className="text-xs uppercase tracking-widest text-zinc-500 font-mono">{label}</div>
-      <div className={`font-mono font-bold mt-2 ${big ? "text-4xl" : "text-3xl"} ${positive ? "text-[#F0A83E]" : "text-white"}`}>
+      <div className={`font-mono font-bold mt-2 ${big ? "text-4xl" : "text-3xl"} ${positive ? "text-[#C8102E]" : "text-white"}`}>
         {value}
       </div>
     </div>
@@ -158,7 +158,7 @@ function Panel({ title, cta, children, testid }) {
       <div className="flex items-center justify-between mb-4">
         <div className="text-xs uppercase tracking-widest text-zinc-400 font-mono">{title}</div>
         {cta && (
-          <Link to={cta.to} data-testid={cta.testid} className="text-xs text-[#F0A83E] hover:underline font-mono">
+          <Link to={cta.to} data-testid={cta.testid} className="text-xs text-[#C8102E] hover:underline font-mono">
             {cta.label}
           </Link>
         )}
@@ -171,10 +171,10 @@ function Panel({ title, cta, children, testid }) {
 export function StatusBadge({ status }) {
   const styles = {
     pending: "text-[#FF9500] border-[#FF9500]/30 bg-[#FF9500]/5",
-    approved: "text-[#F0A83E] border-[#F0A83E]/30 bg-[#F0A83E]/5",
-    completed: "text-[#F0A83E] border-[#F0A83E]/30 bg-[#F0A83E]/5",
+    approved: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/5",
+    completed: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/5",
     rejected: "text-[#FF3B30] border-[#FF3B30]/30 bg-[#FF3B30]/5",
-    active: "text-[#F0A83E] border-[#F0A83E]/30 bg-[#F0A83E]/5",
+    active: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/5",
   };
   return (
     <span className={`inline-block text-[10px] font-mono uppercase px-1.5 py-0.5 border ${styles[status] || "text-zinc-400 border-white/10"}`}>
@@ -188,7 +188,7 @@ function EmptyState({ msg, cta, label }) {
     <div className="py-8 text-center">
       <div className="text-sm text-zinc-500">{msg}</div>
       {cta && (
-        <Link to={cta} className="mt-2 inline-block text-[#F0A83E] text-sm hover:underline font-mono">
+        <Link to={cta} className="mt-2 inline-block text-[#C8102E] text-sm hover:underline font-mono">
           {label} →
         </Link>
       )}

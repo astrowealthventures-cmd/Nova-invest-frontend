@@ -41,14 +41,14 @@ export default function Signup() {
           type="submit"
           disabled={loading}
           data-testid="signup-submit-btn"
-          className="w-full bg-[#F0A83E] text-black font-semibold py-4 flex items-center justify-center gap-2 hover:bg-[#FFBC5C] transition-colors disabled:opacity-50 glow-btn"
+          className="w-full bg-[#C8102E] text-black font-semibold py-4 flex items-center justify-center gap-2 hover:bg-[#E01B3D] transition-colors disabled:opacity-50 glow-btn"
         >
           {loading ? "Creating..." : "Create account"} <ArrowRight size={18} weight="bold" />
         </button>
       </form>
       <p className="mt-8 text-sm text-zinc-500">
         Already have an account?{" "}
-        <Link to="/login" className="text-[#F0A83E] hover:underline" data-testid="signup-to-login-link">
+        <Link to="/login" className="text-[#C8102E] hover:underline" data-testid="signup-to-login-link">
           Sign in →
         </Link>
       </p>
@@ -69,7 +69,7 @@ function F({ label, type, value, onChange, testid }) {
         minLength={type === "password" ? 6 : undefined}
         onChange={(e) => onChange(e.target.value)}
         data-testid={testid}
-        className="w-full bg-[#0F0F0F] border border-white/10 px-4 py-3 text-white outline-none focus:border-[#F0A83E] focus:ring-1 focus:ring-[#F0A83E]/50 transition-colors font-mono text-sm"
+        className="w-full bg-[#0F0F0F] border border-white/10 px-4 py-3 text-white outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/50 transition-colors font-mono text-sm"
       />
     </label>
   );

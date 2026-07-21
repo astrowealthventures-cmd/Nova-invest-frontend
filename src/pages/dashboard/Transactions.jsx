@@ -33,7 +33,7 @@ export default function Transactions() {
             data-testid={`filter-${k}`}
             className={`px-4 py-2 text-sm border transition-colors font-mono ${
               filter === k
-                ? "bg-[#F0A83E] text-black border-[#F0A83E]"
+                ? "bg-[#C8102E] text-white border-[#C8102E]"
                 : "border-white/10 hover:border-white/30 text-zinc-300"
             }`}
           >
@@ -61,7 +61,7 @@ export default function Transactions() {
                 <tr key={t.id} className="border-b border-white/5 last:border-b-0 hover:bg-white/2 transition-colors" data-testid={`tx-${t.id}`}>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      {t.type === "deposit" && <ArrowDownRight size={18} className="text-[#F0A83E]" />}
+                      {t.type === "deposit" && <ArrowDownRight size={18} className="text-[#C8102E]" />}
                       {t.type === "withdraw" && <ArrowUpRight size={18} className="text-[#FF9500]" />}
                       {t.type === "invest" && <TrendUp size={18} className="text-blue-400" />}
                       <span className="capitalize">{t.type}</span>

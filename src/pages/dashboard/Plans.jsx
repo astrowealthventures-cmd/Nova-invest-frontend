@@ -54,11 +54,11 @@ export default function Plans() {
             key={p.id}
             data-testid={`plan-card-${p.id}`}
             className={`relative p-6 hairline bg-[#0F0F0F] flex flex-col ${
-              p.highlight ? "border-[#F0A83E]/50 shadow-[0_0_60px_-20px_rgba(0,200,5,0.5)]" : ""
+              p.highlight ? "border-[#C8102E]/50 shadow-[0_0_60px_-20px_rgba(200,16,46,0.5)]" : ""
             }`}
           >
             {p.highlight && (
-              <div className="absolute -top-3 left-6 bg-[#F0A83E] text-black text-[10px] font-mono font-bold px-2 py-1">
+              <div className="absolute -top-3 left-6 bg-[#C8102E] text-white text-[10px] font-mono font-bold px-2 py-1">
                 MOST POPULAR
               </div>
             )}
@@ -66,7 +66,7 @@ export default function Plans() {
             <div className="text-xs text-zinc-500 mt-1">{p.tagline}</div>
 
             <div className="mt-6 flex items-baseline gap-1">
-              <span className="font-display font-bold text-4xl text-[#F0A83E]">{p.daily_roi}%</span>
+              <span className="font-display font-bold text-4xl text-[#C8102E]">{p.daily_roi}%</span>
               <span className="text-zinc-500 text-sm">/ day</span>
             </div>
 
@@ -82,8 +82,8 @@ export default function Plans() {
               data-testid={`plan-invest-btn-${p.id}`}
               className={`mt-6 py-3 font-semibold transition-colors ${
                 p.highlight
-                  ? "bg-[#F0A83E] text-black hover:bg-[#FFBC5C] glow-btn"
-                  : "border border-white/15 hover:border-[#F0A83E] hover:text-[#F0A83E]"
+                  ? "bg-[#C8102E] text-white hover:bg-[#E01B3D] glow-btn"
+                  : "border border-white/15 hover:border-[#C8102E] hover:text-[#C8102E]"
               }`}
             >
               Invest now
@@ -95,7 +95,7 @@ export default function Plans() {
       {selected && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelected(null)} data-testid="invest-modal">
           <div className="bg-[#0F0F0F] hairline max-w-md w-full p-8" onClick={(e) => e.stopPropagation()}>
-            <div className="text-xs uppercase tracking-widest text-[#F0A83E] font-mono">◆ Confirm investment</div>
+            <div className="text-xs uppercase tracking-widest text-[#C8102E] font-mono">◆ Confirm investment</div>
             <div className="font-display font-bold text-3xl mt-2">{selected.name}</div>
             <div className="text-sm text-zinc-400 mt-1">{selected.daily_roi}% daily · {selected.duration_days} days</div>
 
@@ -114,20 +114,20 @@ export default function Plans() {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder={`${selected.min_deposit} – ${selected.max_deposit}`}
                   data-testid="invest-amount-input"
-                  className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono"
+                  className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono"
                 />
                 <div className="text-xs text-zinc-500 mt-1 font-mono">Balance: {money(balance)}</div>
               </label>
 
               {amount && parseFloat(amount) >= selected.min_deposit && (
-                <div className="p-4 border border-white/10 bg-[#F0A83E]/5 text-sm">
+                <div className="p-4 border border-white/10 bg-[#C8102E]/5 text-sm">
                   <div className="flex justify-between font-mono">
                     <span className="text-zinc-400">Daily earnings</span>
-                    <span className="text-[#F0A83E]">+{money((parseFloat(amount) * selected.daily_roi) / 100)}</span>
+                    <span className="text-[#C8102E]">+{money((parseFloat(amount) * selected.daily_roi) / 100)}</span>
                   </div>
                   <div className="flex justify-between font-mono mt-1">
                     <span className="text-zinc-400">Total earnings</span>
-                    <span className="text-[#F0A83E]">+{money((parseFloat(amount) * selected.daily_roi * selected.duration_days) / 100)}</span>
+                    <span className="text-[#C8102E]">+{money((parseFloat(amount) * selected.daily_roi * selected.duration_days) / 100)}</span>
                   </div>
                 </div>
               )}
@@ -145,7 +145,7 @@ export default function Plans() {
                   type="submit"
                   disabled={loading}
                   data-testid="invest-confirm-btn"
-                  className="flex-1 bg-[#F0A83E] text-black font-semibold py-3 hover:bg-[#FFBC5C] transition-colors disabled:opacity-50"
+                  className="flex-1 bg-[#C8102E] text-white font-semibold py-3 hover:bg-[#E01B3D] transition-colors disabled:opacity-50"
                 >
                   {loading ? "Investing..." : "Confirm"}
                 </button>
@@ -160,8 +160,8 @@ export default function Plans() {
 
 function Li({ children, accent }) {
   return (
-    <li className={`flex items-center gap-2 ${accent ? "text-[#F0A83E] font-semibold" : ""}`}>
-      <Check size={14} weight="bold" className={accent ? "text-[#F0A83E]" : "text-zinc-500"} />
+    <li className={`flex items-center gap-2 ${accent ? "text-[#C8102E] font-semibold" : ""}`}>
+      <Check size={14} weight="bold" className={accent ? "text-[#C8102E]" : "text-zinc-500"} />
       {children}
     </li>
   );

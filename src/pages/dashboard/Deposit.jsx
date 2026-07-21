@@ -75,7 +75,7 @@ export default function Deposit() {
                 data-testid={`asset-btn-${a.id}`}
                 className={`p-4 border transition-all text-left ${
                   asset === a.id
-                    ? "border-[#F0A83E] bg-[#F0A83E]/10"
+                    ? "border-[#C8102E] bg-[#C8102E]/10"
                     : "border-white/10 hover:border-white/30"
                 }`}
               >
@@ -100,7 +100,7 @@ export default function Deposit() {
               <button
                 onClick={copy}
                 data-testid="copy-address-btn"
-                className="mt-3 inline-flex items-center gap-2 border border-white/15 hover:border-[#F0A83E] hover:text-[#F0A83E] px-4 py-2 text-sm transition-colors"
+                className="mt-3 inline-flex items-center gap-2 border border-white/15 hover:border-[#C8102E] hover:text-[#C8102E] px-4 py-2 text-sm transition-colors"
               >
                 {copied ? <CheckCircle size={16} weight="fill" /> : <Copy size={16} />}
                 {copied ? "Copied!" : "Copy address"}
@@ -113,7 +113,7 @@ export default function Deposit() {
         </div>
 
         <form onSubmit={submit} className="hairline bg-[#0F0F0F] p-6 space-y-5" data-testid="deposit-form">
-          <div className="text-xs uppercase tracking-widest text-[#F0A83E] font-mono">
+          <div className="text-xs uppercase tracking-widest text-[#C8102E] font-mono">
             ◆ Confirm deposit
           </div>
           <label className="block">
@@ -128,7 +128,7 @@ export default function Deposit() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               data-testid="deposit-amount-input"
-              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono"
+              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono"
             />
           </label>
           <label className="block">
@@ -143,14 +143,14 @@ export default function Deposit() {
               onChange={(e) => setTxHash(e.target.value)}
               placeholder="0x..."
               data-testid="deposit-txhash-input"
-              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono text-sm"
+              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono text-sm"
             />
           </label>
           <button
             type="submit"
             disabled={loading}
             data-testid="deposit-submit-btn"
-            className="w-full bg-[#F0A83E] text-black font-semibold py-3 hover:bg-[#FFBC5C] transition-colors disabled:opacity-50 glow-btn"
+            className="w-full bg-[#C8102E] text-white font-semibold py-3 hover:bg-[#E01B3D] transition-colors disabled:opacity-50 glow-btn"
           >
             {loading ? "Submitting..." : "Submit deposit"}
           </button>

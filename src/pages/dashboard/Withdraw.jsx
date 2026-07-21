@@ -52,7 +52,7 @@ export default function Withdraw() {
           <button
             type="button"
             onClick={() => setAmount(String(balance))}
-            className="mt-4 text-xs text-[#F0A83E] hover:underline font-mono"
+            className="mt-4 text-xs text-[#C8102E] hover:underline font-mono"
             data-testid="withdraw-max-btn"
           >
             Withdraw max →
@@ -66,7 +66,7 @@ export default function Withdraw() {
               value={asset}
               onChange={(e) => setAsset(e.target.value)}
               data-testid="withdraw-asset-select"
-              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono"
+              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono"
             >
               <option value="BTC">BTC — Bitcoin</option>
               <option value="ETH">ETH — Ethereum (ERC-20)</option>
@@ -84,7 +84,7 @@ export default function Withdraw() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               data-testid="withdraw-amount-input"
-              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono"
+              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono"
             />
           </label>
           <label className="block">
@@ -97,14 +97,14 @@ export default function Withdraw() {
               onChange={(e) => setAddress(e.target.value)}
               placeholder={asset === "BTC" ? "bc1..." : asset === "ETH" ? "0x..." : "T..."}
               data-testid="withdraw-address-input"
-              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#F0A83E] font-mono text-sm"
+              className="w-full bg-[#050505] border border-white/10 px-4 py-3 outline-none focus:border-[#C8102E] font-mono text-sm"
             />
           </label>
           <button
             type="submit"
             disabled={loading || balance <= 0}
             data-testid="withdraw-submit-btn"
-            className="w-full bg-[#F0A83E] text-black font-semibold py-3 hover:bg-[#FFBC5C] transition-colors disabled:opacity-50 glow-btn"
+            className="w-full bg-[#C8102E] text-white font-semibold py-3 hover:bg-[#E01B3D] transition-colors disabled:opacity-50 glow-btn"
           >
             {loading ? "Submitting..." : "Request withdrawal"}
           </button>
