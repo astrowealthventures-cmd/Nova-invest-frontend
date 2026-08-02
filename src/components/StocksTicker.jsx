@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 const FINNHUB_KEY = "d9fju31r01qu5nheq770d9fju31r01qu5nheq77g";
 
 const STOCKS = [
-    { symbol: "TSLA", name: "Tesla", blurb: "EVs, energy storage, and autonomy.", domain: "tesla.com" },
-    { symbol: "AAPL", name: "Apple", blurb: "iPhone, Mac, and services giant.", domain: "apple.com" },
-    { symbol: "MSFT", name: "Microsoft", blurb: "Cloud, software, and AI leader.", domain: "microsoft.com" },
-    { symbol: "NVDA", name: "NVIDIA", blurb: "GPUs powering the AI boom.", domain: "nvidia.com" },
-    { symbol: "AMZN", name: "Amazon", blurb: "E-commerce and AWS cloud.", domain: "amazon.com" },
-    { symbol: "GOOGL", name: "Alphabet", blurb: "Search, ads, and YouTube.", domain: "abc.xyz" },
-    { symbol: "META", name: "Meta", blurb: "Social platforms and VR.", domain: "meta.com" },
-    { symbol: "AMD", name: "AMD", blurb: "CPUs and GPUs at scale.", domain: "amd.com" },
+    { symbol: "TSLA", name: "Tesla", blurb: "EVs, energy storage, and autonomy.", domain: "tesla.com", img: "/telsa.png" },
+    { symbol: "AAPL", name: "Apple", blurb: "iPhone, Mac, and services giant.", domain: "apple.com", img: "/apple.png" },
+    { symbol: "MSFT", name: "Microsoft", blurb: "Cloud, software, and AI leader.", domain: "microsoft.com", img: "/microsoft.png" },
+    { symbol: "NVDA", name: "NVIDIA", blurb: "GPUs powering the AI boom.", domain: "nvidia.com", img: "/nvidia.png" },
+    { symbol: "AMZN", name: "Amazon", blurb: "E-commerce and AWS cloud.", domain: "amazon.com", img: "/amazon.png" },
+    { symbol: "GOOGL", name: "Alphabet", blurb: "Search, ads, and YouTube.", domain: "abc.xyz", img: "/alphabet.png" },
+    { symbol: "META", name: "Meta", blurb: "Social platforms and VR.", domain: "meta.com", img: "/meta.png" },
+    { symbol: "AMD", name: "AMD", blurb: "CPUs and GPUs at scale.", domain: "amd.com", img: "/amd.png" },
     // SpaceX is PRIVATE — not tradable on public markets
-    { symbol: "SPACEX", name: "SpaceX", blurb: "Rockets and Starlink. Private company.", domain: "spacex.com", private: true },
+    { symbol: "SPACEX", name: "SpaceX", blurb: "Rockets and Starlink. Private company.", domain: "spacex.com", private: true, img: "/spacex.jpg" },
 ];
 
 function Logo({ domain, name }) {
@@ -82,7 +82,7 @@ export default function StocksTicker() {
                                 className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 hover:border-white/25 hover:bg-white/10 transition"
                             >
                                 <div className="flex items-center gap-3 mb-3">
-                                    <Logo domain={s.domain} name={s.name} />
+                                    <img src={s.img} alt={s.name} />
                                     <div>
                                         <div className="text-white font-semibold">{s.symbol}</div>
                                         <div className="text-white/50 text-xs">{s.name}</div>

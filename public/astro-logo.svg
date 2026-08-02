@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img"
+    aria-label="AstroWealthVentures logo">
+    <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="100%" stop-color="#C8102E" />
+        </linearGradient>
+    </defs>
+    <rect width="512" height="512" rx="64" fill="#000" />
+    <circle cx="256" cy="256" r="210" fill="#090909" stroke="#C8102E" stroke-width="18" />
+    <path d="M149 346 L212 166 L281 346 L347 166 L410 346" fill="none" stroke="url(#grad)"
+        stroke-width="32" stroke-linecap="round" />
+    <rect x="134" y="322" width="244" height="32" rx="16" fill="#C8102E" />
+    <text x="256" y="462" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="42"
+        font-weight="700" text-anchor="middle">AstroWealthVentures</text>
+</svg>

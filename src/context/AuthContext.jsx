@@ -35,12 +35,13 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async ({ firstName, lastName, email, password, currency, dateOfBirth }) => {
     setError("");
     try {
-      const { data } = await http.post("/auth/register", { name, email, password });
-      setUser(data.user);
-      return data.user;
+      const { data } = await http.post("/auth/register", {
+        firstName, lastName, email, password, currency, dateOfBirth,
+      });
+      return data; // don't setUser here — they're not verified/logged in yet
     } catch (e) {
       const msg = fmtError(e.response?.data?.detail) || e.message;
       setError(msg);
@@ -51,7 +52,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try {
       await http.post("/auth/logout");
-    } catch (_) {}
+    } catch (_) { }
     setUser(false);
   };
 

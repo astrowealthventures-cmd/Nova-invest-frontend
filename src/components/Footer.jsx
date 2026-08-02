@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import BrandMark from "@/components/BrandMark";
 
 export default function Footer() {
   return (
@@ -6,9 +7,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2">
-            <div className="font-display text-3xl md:text-5xl font-bold tracking-tight leading-none">
-              <span className="text-[#C8102E]">AstroWealthVentures</span>
-              <br />
+            <div className="flex items-center gap-3">
+              <BrandMark className="w-10 h-10" />
+
             </div>
             <p className="mt-4 text-zinc-500 text-sm max-w-xs">
               Institutional-grade digital asset investment platform. Regulated, audited, and built for the next decade of wealth.
@@ -25,17 +26,17 @@ export default function Footer() {
           <FooterCol
             title="Company"
             links={[
-              ["About", "#"],
-              ["Security", "#"],
-              ["Partners", "#"],
+              ["About", "/about"],
+              ["Security", "/security"],
+              ["Partners", "/partners"],
             ]}
           />
           <FooterCol
             title="Legal"
             links={[
-              ["Terms", "#"],
-              ["Privacy", "#"],
-              ["Disclosures", "#"],
+              ["Terms", "/terms"],
+              ["Privacy", "/privacy"],
+              ["Disclosures", "/disclosures"],
             ]}
           />
         </div>

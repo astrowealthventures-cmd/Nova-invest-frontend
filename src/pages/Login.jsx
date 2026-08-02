@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import BrandMark from "@/components/BrandMark";
 import { ArrowRight } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
@@ -41,12 +42,17 @@ export default function Login() {
         {loading ? "Signing in..." : "Sign in"} <ArrowRight size={18} weight="bold" />
       </button>
     </form>
-    <p className="mt-8 text-sm text-zinc-500">
-      New here?{" "}
-      <Link to="/signup" className="text-[#C8102E] hover:underline" data-testid="login-to-signup-link">
-        Create an account →
-      </Link>
-    </p>
+    <div className="mt-8 border-t border-white/10 pt-6 text-sm text-zinc-400">
+      <p className="max-w-md">
+        <Link to="/forgot-password" className="font-medium text-[#C8102E] hover:text-[#E01B3D] transition-colors" data-testid="signup-forgot-password-link">
+          Forgot password?
+        </Link>
+        New here?{" "}
+        <Link to="/signup" className="font-medium text-[#C8102E] hover:text-[#E01B3D] transition-colors" data-testid="login-to-signup-link">
+          Create an account →
+        </Link>
+      </p>
+    </div>
   </AuthShell>;
 }
 
@@ -74,7 +80,8 @@ export function AuthShell({ title, children }) {
       <div className="hidden md:flex relative flex-col justify-between p-12 bg-[#020202] overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 grid-lines opacity-40" />
         <div className="absolute -left-24 top-1/2 -translate-y-1/2 w-96 h-96 bg-[#C8102E]/20 blur-[120px]" />
-        <Link to="/" className="relative font-display font-bold text-2xl tracking-tight" data-testid="auth-logo">
+        <Link to="/" className="relative flex items-center gap-3 font-display font-bold text-2xl tracking-tight" data-testid="auth-logo">
+          <BrandMark className="w-12 h-12" />
           <span className="text-[#C8102E]">AstroWealthVentures</span>
         </Link>
         <div className="relative">
@@ -94,7 +101,8 @@ export function AuthShell({ title, children }) {
       </div>
       <div className="flex flex-col items-stretch justify-center px-6 md:px-16 py-16">
         <div className="md:hidden mb-8">
-          <Link to="/" className="font-display font-bold text-xl">
+          <Link to="/" className="flex items-center gap-3 font-display font-bold text-xl">
+            <BrandMark className="w-10 h-10" />
             <span className="text-[#C8102E]">AstroWealthVentures</span>
           </Link>
         </div>

@@ -5,12 +5,17 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { AuthShell } from "@/pages/Login";
 import { toast } from "sonner";
 
+const CURRENCIES = ["USD", "EUR", "GBP", "NGN"]; // adjust to whatever you support
+
 export default function Signup() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [currency, setCurrency] = useState("USD");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -19,9 +24,8 @@ export default function Signup() {
     setLoading(true);
     setErr("");
     try {
-      await register(name, email, password);
-      toast.success("Account created");
-      navigate("/dashboard");
+      await register({ firstName, lastName, email, password, currency, dateOfBirth });
+      navigate("/verify-email", { state: { email } });
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -33,9 +37,35 @@ export default function Signup() {
     <AuthShell title="Open account">
       <p className="mt-3 text-zinc-400">60 seconds. No paperwork.</p>
       <form onSubmit={submit} className="mt-10 space-y-5" data-testid="signup-form">
-        <F label="Full name" type="text" value={name} onChange={setName} testid="signup-name" />
+        <div className="grid grid-cols-2 gap-4">
+          <F label="First name" type="text" value={firstName} onChange={setFirstName} testid="signup-firstname" />
+          <F label="Last name" type="text" value={lastName} onChange={setLastName} testid="signup-lastname" />
+        </div>
         <F label="Email" type="email" value={email} onChange={setEmail} testid="signup-email" />
         <F label="Password" type="password" value={password} onChange={setPassword} testid="signup-password" />
+        <F
+          label="Date of birth"
+          type="date"
+          value={dateOfBirth}
+          onChange={setDateOfBirth}
+          testid="signup-dob"
+        />
+        <label className="block">
+          <span className="block text-xs uppercase tracking-widest text-zinc-500 font-mono mb-2">
+            Currency
+          </span>
+          <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            required
+            data-testid="signup-currency"
+            className="w-full bg-[#0F0F0F] border border-white/10 px-4 py-3 text-white outline-none focus:border-[#C8102E] focus:ring-1 focus:ring-[#C8102E]/50 transition-colors font-mono text-sm"
+          >
+            {CURRENCIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </label>
         {err && <div className="text-sm text-[#FF3B30] font-mono" data-testid="signup-error">{err}</div>}
         <button
           type="submit"
@@ -46,12 +76,17 @@ export default function Signup() {
           {loading ? "Creating..." : "Create account"} <ArrowRight size={18} weight="bold" />
         </button>
       </form>
-      <p className="mt-8 text-sm text-zinc-500">
-        Already have an account?{" "}
-        <Link to="/login" className="text-[#C8102E] hover:underline" data-testid="signup-to-login-link">
-          Sign in →
-        </Link>
-      </p>
+      <div className="mt-8 border-t border-white/10 pt-6 text-sm text-zinc-400 space-y-3">
+        <p className="max-w-md">
+         
+        </p>
+        <p className="max-w-md">
+          Already have an account?{" "}
+          <Link to="/login" className="font-medium text-[#C8102E] hover:text-[#E01B3D] transition-colors" data-testid="signup-to-login-link">
+            Login →
+          </Link>
+        </p>
+      </div>
     </AuthShell>
   );
 }

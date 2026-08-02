@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useInView, animate } from "framer-motion";
+import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { http, money } from "@/lib/api";
 
 const HERO_IMAGES = [
@@ -41,13 +42,55 @@ const HERO_STATS = [
   { target: 99.99, decimals: 2, prefix: "", suffix: "%", label: "Uptime" },
 ];
 
+const TESTIMONIALS = [
+  {
+    quote: "The platform made my first crypto allocation feel safe and high-performing.",
+    name: "Anya",
+    role: "Investor",
+  },
+  {
+    quote: "Zero stress, daily updates, and the dashboard gives me full clarity.",
+    name: "Miles",
+    role: "Wealth Builder",
+  },
+  {
+    quote: "The returns are steady, and the experience is far better than I expected.",
+    name: "Nora",
+    role: "Trader",
+  },
+  {
+    quote: "I love seeing the daily payout summary every morning.",
+    name: "Priya",
+    role: "Portfolio Manager",
+  },
+  {
+    quote: "My friends are asking how I stay so calm in this market.",
+    name: "Zeke",
+    role: "Hedge Fund Analyst",
+  },
+  {
+    quote: "A clean interface and automatic diversification props this strategy.",
+    name: "Lena",
+    role: "Yield Seeker",
+  },
+];
+
 export default function Landing() {
   const [plans, setPlans] = useState([]);
   const [heroImgIndex, setHeroImgIndex] = useState(0);
+  const [commentApi, setCommentApi] = useState(null);
 
   useEffect(() => {
     http.get("/plans").then(({ data }) => setPlans(data)).catch(() => { });
   }, []);
+
+  useEffect(() => {
+    if (!commentApi) return;
+    const interval = setInterval(() => {
+      commentApi.scrollNext();
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [commentApi]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -290,49 +333,42 @@ export default function Landing() {
             Voices from the <span className="text-zinc-500">portfolio.</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              {
-                quote:
-                  "Doubled my savings in 8 months. The daily payouts hit my wallet like clockwork.",
-                name: "@PeterLBrandt",
-                role: "Trader",
-                img: AVATARS[0],
-              },
-              {
-                quote:
-                  "Finally a platform that treats retail investors like institutions. The transparency is unmatched.",
-                name: "Priya Sharma",
-                role: "Portfolio Manager",
-                img: AVATARS[1],
-              },
-              {
-                quote:
-                  "Been in crypto since '17. AstroWealth is the first platform I'd trust with size. Real yields, real custody.",
-                name: "Andre Kowalski",
-                role: "Family Office",
-                img: AVATARS[2],
-              },
-            ].map((t, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-8 hairline bg-[#0A0A0A]"
-              >
-                <div className="text-[#C8102E] font-display text-4xl leading-none">"</div>
-                <p className="mt-4 text-zinc-300 leading-relaxed">{t.quote}</p>
-                <div className="mt-8 flex items-center gap-3">
-                  <img src={t.img} alt="" className="w-10 h-10 object-cover" />
-                  <div>
-                    <div className="text-sm font-semibold">{t.name}</div>
-                    <div className="text-xs text-zinc-500 font-mono">{t.role}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="relative">
+            <Carousel
+              orientation="horizontal"
+              opts={{ loop: true, align: "start", containScroll: "trimSnaps" }}
+              setApi={setCommentApi}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {TESTIMONIALS.map((t, i) => (
+                  <CarouselItem
+                    key={t.name}
+                    className="pl-4 basis-[85%] sm:basis-[60%] md:basis-[40%] lg:basis-[30%]"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-60px" }}
+                      transition={{ duration: 0.5, delay: i * 0.08 }}
+                      className="p-8 hairline bg-[#0A0A0A] min-h-[260px] h-full"
+                    >
+                      <div className="text-[#C8102E] font-display text-4xl leading-none">"</div>
+                      <p className="mt-4 text-zinc-300 leading-relaxed">{t.quote}</p>
+                      <div className="mt-8 flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-xl font-semibold text-white">
+                          {t.name[0].toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">{t.name}</div>
+                          <div className="text-xs text-zinc-500 font-mono">{t.role}</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
         </div>
       </section>

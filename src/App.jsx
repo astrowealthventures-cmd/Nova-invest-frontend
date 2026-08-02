@@ -13,6 +13,16 @@ import Withdraw from "@/pages/dashboard/Withdraw";
 import Transactions from "@/pages/dashboard/Transactions";
 import Investments from "@/pages/dashboard/Investments";
 import AdminPanel from "@/pages/dashboard/AdminPanel";
+import VerifyEmailPending from "@/context/VerifyEmailPending";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import VerifyEmail from "@/pages/VerifyEmail";
+import Disclosures from "@/pages/Disclosures";
+import About from "@/pages/About";
+import Security from "@/pages/Security"
+import Partners from "@/pages/Partners"
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 function Protected({ children }) {
   const { user } = useAuth();
@@ -36,6 +46,17 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-email" element={<VerifyEmailPending />} />
+            <Route path="/verify" element={<VerifyEmail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/security" element={<Security />} />
+            <Route path="/partners" element={<Partners />} />
+            <Route path="/disclosures" element={<Disclosures />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/dashboard"
               element={
