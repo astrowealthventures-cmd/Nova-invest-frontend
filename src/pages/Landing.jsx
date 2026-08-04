@@ -26,7 +26,6 @@ const HERO_IMAGES = [
   "https://images.pexels.com/photos/73872/rocket-launch-rocket-take-off-nasa-73872.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1400",
 ];
 
-
 const AVATARS = [
   "/qg-ZI8ES_400x400.jpg",
   "/protrader_400x400.jpg",
@@ -104,7 +103,8 @@ export default function Landing() {
       <Navbar transparent />
 
       {/* Hero */}
-      <section className="relative pt-24 md:pt-32 pb-16 md:pb-24 overflow-hidden">
+      <section className="relative pt-24 md:pt-32 overflow-hidden">
+        {/* background layers — rotating images kept, just dimmer so the poster reads */}
         <div className="absolute inset-0 grid-lines opacity-40" />
         <AnimatePresence mode="sync">
           <motion.img
@@ -112,80 +112,100 @@ export default function Landing() {
             src={HERO_IMAGES[heroImgIndex]}
             alt=""
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.25 }}
+            animate={{ opacity: 0.18 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full object-cover"
           />
         </AnimatePresence>
         <Starfield count={100} />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/40 to-[#050505]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/70 via-[#050505]/40 to-[#050505]" />
 
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-10 md:pt-20">
+        <div className="relative flex flex-col items-center text-center px-6">
+          {/* AV monogram */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-mono text-zinc-300 mb-8"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
           >
-            <span className="w-1.5 h-1.5 bg-[#C8102E] rounded-full pulse-glow" />
-            LIVE · $2.4B under management
+            <AVMonogram className="w-[260px] md:w-[360px]" />
           </motion.div>
 
+          {/* ASTROWEALTH wordmark */}
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95] max-w-5xl"
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="mt-4 md:mt-6 font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[0.16em] leading-none"
           >
-            Wealth, engineered
-            <br />
-            for the <span className="text-[#C8102E]">next decade.</span>
+            <span className="text-white">ASTRO</span>
+            <span className="text-[#C8102E]">WEALTH</span>
           </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-8 text-lg md:text-xl text-zinc-400 max-w-2xl leading-relaxed"
-          >
-            Algorithmic yield strategies, on-chain transparency, institutional
-            custody. Deposit crypto, watch it compound — daily.
-          </motion.p>
-
+          {/* VENTURES with side rules */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            transition={{ duration: 0.7, delay: 0.25 }}
+            className="mt-5 flex items-center gap-4 md:gap-6"
           >
-            <Link
-              to="/signup"
-              data-testid="hero-cta-signup"
-              className="group inline-flex items-center gap-2 bg-[#C8102E] text-black font-semibold px-6 py-4 hover:bg-[#E01B3D] transition-colors glow-btn"
-            >
-              Open account
-              <ArrowRight
-                size={18}
-                weight="bold"
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </Link>
-            <a
-              href="#plans"
-              data-testid="hero-cta-plans"
-              className="inline-flex items-center gap-2 border border-white/15 hover:border-white/40 px-6 py-4 transition-colors"
-            >
-              Explore plans
-            </a>
+            <span className="h-px w-14 md:w-24 bg-gradient-to-r from-transparent to-[#C8102E]" />
+            <span className="font-serif text-sm md:text-xl tracking-[0.55em] text-white pl-[0.55em]">
+              VENTURES
+            </span>
+            <span className="h-px w-14 md:w-24 bg-gradient-to-l from-transparent to-[#C8102E]" />
           </motion.div>
 
-          {/* stat grid - animated count-up on scroll into view */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 border border-white/5">
-            {HERO_STATS.map((s) => (
-              <AnimatedStat key={s.label} {...s} />
-            ))}
-          </div>
+          {/* tagline */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.35 }}
+            className="mt-6 text-[10px] md:text-xs tracking-[0.42em] text-zinc-400"
+          >
+            INVESTING TODAY. BUILDING TOMORROW.
+          </motion.p>
+
+          {/* SpaceX | Tesla row */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.45 }}
+            className="mt-12 md:mt-16 flex items-center gap-6 md:gap-10"
+          >
+            <SpaceXLogo className="text-lg md:text-2xl" />
+            <span className="h-10 md:h-12 w-px bg-white/15" />
+            <div className="flex flex-col items-center gap-1.5">
+              <TeslaLogo className="h-8 md:h-10 text-[#C8102E]" />
+              <span className="text-[9px] md:text-[10px] tracking-[0.4em] text-[#C8102E] pl-[0.4em]">
+                TESLA
+              </span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* earth horizon with red sunrise */}
+        <div className="relative mt-14 md:mt-20 h-40 md:h-56 overflow-hidden pointer-events-none select-none">
+          <div
+            className="absolute left-1/2 top-10 -translate-x-1/2 w-[2400px] h-[2400px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 0%, #161616 0%, #0b0b0b 30%, #030303 65%)",
+              boxShadow:
+                "0 -2px 0 rgba(255,255,255,0.4), 0 -8px 30px rgba(255,255,255,0.18), 0 -30px 90px rgba(255,255,255,0.08)",
+            }}
+          />
+          <div className="absolute left-1/2 top-10 -translate-x-1/2 -translate-y-1/2 h-14 w-80 rounded-full bg-[#C8102E] opacity-60 blur-3xl" />
+          <div className="absolute left-1/2 top-10 -translate-x-1/2 -translate-y-1/2 h-2.5 w-24 rounded-full bg-[#ff3b55] blur-[6px]" />
+        </div>
+      </section>
+
+      {/* stats moved out of the hero so the poster stays clean */}
+      <section className="border-y border-white/5 bg-[#050505]">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
+          {HERO_STATS.map((s) => (
+            <AnimatedStat key={s.label} {...s} />
+          ))}
         </div>
       </section>
 
@@ -463,5 +483,72 @@ function Row({ label, value, accent }) {
         {value}
       </span>
     </div>
+  );
+}
+
+function AVMonogram({ className = "" }) {
+  return (
+    <svg viewBox="0 0 480 280" className={className} fill="none" aria-hidden>
+      <defs>
+        <linearGradient id="av-a" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#c9c9c9" />
+        </linearGradient>
+        <linearGradient id="av-v" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#E01B3D" />
+          <stop offset="1" stopColor="#7a0a1c" />
+        </linearGradient>
+        <linearGradient id="av-swoosh" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.45" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#C8102E" />
+        </linearGradient>
+      </defs>
+
+      {/* A */}
+      <path
+        d="M128 30 L155 30 L215 244 L185 244 L141 96 L103 244 L60 244 L56 234 L74 234 Z"
+        fill="url(#av-a)"
+      />
+      {/* V */}
+      <path
+        d="M240 60 L305 60 L305 72 L285 72 L330 208 L372 72 L352 72 L352 60 L415 60 L415 72 L398 72 L340 250 L322 250 L262 72 L240 72 Z"
+        fill="url(#av-v)"
+      />
+      {/* orbit swoosh */}
+      <path
+        d="M18 252 C 160 224, 320 150, 448 34 C 330 160, 170 232, 20 262 Z"
+        fill="url(#av-swoosh)"
+      />
+      {/* star */}
+      <path
+        d="M452 6 C454 20 458 24 472 26 C458 28 454 32 452 46 C450 32 446 28 432 26 C446 24 450 20 452 6 Z"
+        fill="#fff"
+      />
+    </svg>
+  );
+}
+
+function SpaceXLogo({ className = "" }) {
+  return (
+    <span className={`relative inline-flex items-center text-white font-semibold tracking-[0.35em] ${className}`}>
+      SPACE
+      <span className="relative">
+        X
+        {/* the little swoosh flying off the X */}
+        <svg viewBox="0 0 60 20" className="absolute left-[0.1em] -top-[0.45em] w-[2.6em]" fill="none">
+          <path d="M2 18 C 20 13, 40 6, 58 1 C 40 9, 22 15, 4 20 Z" fill="currentColor" />
+        </svg>
+      </span>
+    </span>
+  );
+}
+
+function TeslaLogo({ className = "" }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} fill="currentColor" aria-hidden>
+      <path d="M10 22 Q50 4 90 22 L82 34 Q50 20 18 34 Z" />
+      <path d="M50 22 Q57 28 60 32 L53 94 L50 100 L47 94 L40 32 Q43 28 50 22 Z" />
+    </svg>
   );
 }
