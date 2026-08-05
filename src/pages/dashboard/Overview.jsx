@@ -10,19 +10,22 @@ import {
   YAxis,
 } from "recharts";
 import {
-  Wallet,
-  TrendUp,
-  Coins,
-  ArrowUpRight,
   ArrowDownRight,
-  Lightning,
-  Clock,
-  CheckCircle,
-  XCircle,
-  CircleNotch,
-  Rocket,
+  ArrowUp,
+  ArrowUpRight,
+  CaretRight,
   ChartLineUp,
-  ArrowsClockwise,
+  ChartPieSlice,
+  Clock,
+  Lightning,
+  Megaphone,
+  Plus,
+  Receipt,
+  Rocket,
+  TrendUp,
+  Wallet,
+  Warning,
+  X,
 } from "@phosphor-icons/react";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
@@ -33,468 +36,391 @@ export default function Overview() {
   const [chart, setChart] = useState([]);
   const [investments, setInvestments] = useState([]);
   const [txs, setTxs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [showBonus, setShowBonus] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const [s, c, inv, t] = await Promise.all([
-          http.get("/portfolio/summary"),
-          http.get("/portfolio/chart"),
-          http.get("/investments"),
-          http.get("/transactions"),
-        ]);
-        setSummary(s.data);
-        setChart(c.data);
-        setInvestments(inv.data);
-        setTxs(t.data);
-      } finally {
-        setIsLoading(false);
-      }
+      const [s, c, inv, t] = await Promise.all([
+        http.get("/portfolio/summary"),
+        http.get("/portfolio/chart"),
+        http.get("/investments"),
+        http.get("/transactions"),
+      ]);
+      setSummary(s.data);
+      setChart(c.data);
+      setInvestments(inv.data);
+      setTxs(t.data);
     };
     load();
   }, []);
+
+  const withdrawn = txs
+    .filter((t) => t.type === "withdraw" && t.status !== "rejected")
+    .reduce((sum, t) => sum + Number(t.amount_usd || 0), 0);
 
   const allTimeReturn = summary.total_deposits > 0
     ? ((summary.earnings / (summary.total_deposits || 1)) * 100).toFixed(2)
     : "0.00";
 
   return (
-    <div className="space-y-8" data-testid="dashboard-overview">
-      {/* Header */}
+    <div className="space-y-6 md:space-y-8" data-testid="dashboard-overview">
+      {/* Welcome bonus banner */}
+      {showBonus && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative flex items-center gap-4 rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-400/10 via-amber-400/5 to-transparent p-4 md:p-5"
+        >
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-400/15 text-amber-400">
+            <Megaphone size={24} weight="duotone" />
+          </div>
+          <div className="flex-1">
+            <div className="font-semibold text-amber-400">Welcome Bonus Available!</div>
+            <div className="mt-0.5 text-sm text-zinc-400">
+              Deposit now and earn up to 15% bonus on your first investment!
+            </div>
+          </div>
+          <button
+            onClick={() => setShowBonus(false)}
+            className="text-zinc-500 transition-colors hover:text-white"
+            aria-label="Dismiss"
+          >
+            <X size={18} weight="bold" />
+          </button>
+        </motion.div>
+      )}
+
+      {/* Greeting */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ delay: 0.05 }}
       >
-        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-zinc-500 font-mono mb-2">
-          <Clock size={14} weight="duotone" />
-          {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
-        </div>
-        <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight">
+        <h1 className="font-display font-bold text-3xl md:text-5xl tracking-tight">
           Welcome back, <span className="text-[#C8102E]">{user?.name?.split(" ")[0]}</span>
         </h1>
+        <div className="mt-2 text-sm md:text-base text-zinc-500">
+          {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+        </div>
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+          Markets Live
+        </div>
       </motion.div>
 
-      {/* Top Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+
+      {/* Balance card + stat tiles */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Account balance */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ delay: 0.15 }}
+          className="lg:col-span-3 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-[#161616] to-[#0C0C0C] p-6 md:p-8"
+          data-testid="stat-balance"
         >
-          <StatCard
-            icon={<Wallet size={28} weight="duotone" />}
-            label="Total Balance"
-            value={money(summary.balance)}
-            accent
-            big
-            testid="stat-balance"
-            trend={allTimeReturn}
-          />
+          <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-[#C8102E] to-transparent" />
+          <div className="absolute -top-24 left-1/2 h-40 w-2/3 -translate-x-1/2 rounded-full bg-[#C8102E]/20 blur-3xl" />
+
+          <div className="relative">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C8102E]/15 text-[#C8102E]">
+                <Wallet size={20} weight="duotone" />
+              </div>
+              <div className="text-xs uppercase tracking-[0.25em] text-zinc-400 font-mono">
+                Account Balance
+              </div>
+            </div>
+
+            <div className="mt-5 font-mono text-5xl md:text-6xl font-bold tracking-tight">
+              {money(summary.balance)}
+            </div>
+            <div className="mt-2 text-sm text-zinc-500">
+              Last updated:{" "}
+              {new Date().toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span data-testid="stat-invested" className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-mono text-zinc-300">
+                Invested {money(summary.invested)}
+              </span>
+              <span className="rounded-full border border-green-500/20 bg-green-500/10 px-3 py-1 text-xs font-mono text-green-400">
+                Earned {money(summary.earnings)}
+              </span>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <Link
+                to="/dashboard/deposit"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#C8102E] py-3.5 font-semibold text-white transition-colors hover:bg-[#E01B3D]"
+              >
+                <Plus size={18} weight="bold" /> Deposit
+              </Link>
+              <Link
+                to="/dashboard/withdraw"
+                className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3.5 font-semibold transition-colors hover:border-white/30"
+              >
+                <ArrowUp size={18} weight="bold" /> Withdraw
+              </Link>
+            </div>
+          </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <StatCard
-            icon={<Coins size={28} weight="duotone" />}
-            label="Total Invested"
-            value={money(summary.invested)}
-            testid="stat-invested"
-            activeInvestments={summary.active_investments}
-          />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <StatCard
-            icon={<TrendUp size={28} weight="duotone" />}
-            label="Total Earnings"
+        {/* 2x2 stat tiles */}
+        <div className="lg:col-span-2 grid grid-cols-2 gap-3 md:gap-4 content-start">
+          <StatTile
+            icon={<ChartLineUp size={24} weight="duotone" />}
+            tint="bg-green-500/10 text-green-400"
             value={money(summary.earnings)}
-            positive
+            label="Total Profits"
             testid="stat-earnings"
-            trend={allTimeReturn}
+            delay={0.2}
           />
-        </motion.div>
+          <StatTile
+            icon={<ChartPieSlice size={24} weight="duotone" />}
+            tint="bg-blue-500/10 text-blue-400"
+            value={summary.active_investments}
+            label="Active Plans"
+            delay={0.25}
+          />
+          <StatTile
+            icon={<ArrowDownRight size={24} weight="duotone" />}
+            tint="bg-emerald-500/10 text-emerald-400"
+            value={money(summary.total_deposits)}
+            label="Deposited"
+            delay={0.3}
+          />
+          <StatTile
+            icon={<ArrowUpRight size={24} weight="duotone" />}
+            tint="bg-red-500/10 text-red-400"
+            value={money(withdrawn)}
+            label="Withdrawn"
+            delay={0.35}
+          />
+        </div>
       </div>
 
-      {/* Portfolio Chart */}
+      {/* Portfolio chart */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="relative hairline bg-gradient-to-br from-[#0F0F0F] via-[#0A0A0A] to-[#0F0F0F] p-6 md:p-8 overflow-hidden"
+        transition={{ delay: 0.25 }}
+        className="rounded-3xl border border-white/5 bg-[#101010] p-6 md:p-8"
         data-testid="portfolio-chart-card"
       >
-        {/* Decorative grid */}
-        <div className="absolute inset-0 grid-lines opacity-20 pointer-events-none" />
-
-        <div className="relative">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-            <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-zinc-500 font-mono mb-2">
-                <ChartLineUp size={14} weight="duotone" />
-                Portfolio Value
-              </div>
-              <div className="font-mono text-4xl md:text-5xl font-bold tracking-tight">
-                {money(summary.balance + summary.invested + summary.earnings)}
-              </div>
-              <div className="mt-2 text-sm text-zinc-400">
-                Across {summary.active_investments || 0} active position{summary.active_investments !== 1 ? 's' : ''}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6">
-              <div className="flex flex-col items-end">
-                <div className="text-xs text-zinc-500 font-mono mb-1">All-time return</div>
-                <div className="flex items-center gap-2">
-                  {Number(allTimeReturn) >= 0 ? (
-                    <>
-                      <ArrowUpRight size={24} weight="bold" className="text-[#C8102E]" />
-                      <span className="font-mono text-2xl font-bold text-[#C8102E]">
-                        +{allTimeReturn}%
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <ArrowDownRight size={24} weight="bold" className="text-red-500" />
-                      <span className="font-mono text-2xl font-bold text-red-500">
-                        {allTimeReturn}%
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <div className="text-xs uppercase tracking-widest text-zinc-500 font-mono">Portfolio value</div>
+            <div className="font-mono text-3xl md:text-4xl font-bold mt-1">
+              {money(summary.balance + summary.invested + summary.earnings)}
             </div>
           </div>
-
-          <div className="h-72 md:h-80 min-h-[288px]">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart data={chart} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#C8102E" stopOpacity={0.6} />
-                    <stop offset="100%" stopColor="#C8102E" stopOpacity={0.05} />
-                  </linearGradient>
-                  <linearGradient id="chartStroke" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#C8102E" />
-                    <stop offset="50%" stopColor="#E01B3D" />
-                    <stop offset="100%" stopColor="#C8102E" />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="date"
-                  tick={{ fill: "#71717a", fontSize: 11, fontFamily: "JetBrains Mono" }}
-                  tickLine={false}
-                  axisLine={false}
-                  interval="preserveStartEnd"
-                />
-                <YAxis
-                  tick={{ fill: "#71717a", fontSize: 11, fontFamily: "JetBrains Mono" }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                  width={50}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: "rgba(10, 10, 10, 0.95)",
-                    border: "1px solid rgba(200, 16, 46, 0.3)",
-                    borderRadius: "8px",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 12,
-                    backdropFilter: "blur(10px)",
-                  }}
-                  labelStyle={{ color: "#a1a1aa", marginBottom: 4 }}
-                  formatter={(v) => [`$${Number(v).toLocaleString()}`, "Value"]}
-                  cursor={{ stroke: "rgba(200, 16, 46, 0.2)", strokeWidth: 1 }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="url(#chartStroke)"
-                  strokeWidth={3}
-                  fill="url(#chartGrad)"
-                  activeDot={{ r: 6, fill: "#C8102E", stroke: "#fff", strokeWidth: 2 }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#C8102E]/30 bg-[#C8102E]/10 px-3 py-1.5 text-sm font-mono text-[#C8102E]">
+            <TrendUp size={16} weight="bold" />
+            +{allTimeReturn}% all-time
           </div>
+        </div>
+
+        <div className="h-64 md:h-72 min-h-[256px]">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <AreaChart data={chart} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
+              <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#C8102E" stopOpacity={0.5} />
+                  <stop offset="100%" stopColor="#C8102E" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="date" tick={{ fill: "#52525b", fontSize: 11, fontFamily: "JetBrains Mono" }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+              <YAxis tick={{ fill: "#52525b", fontSize: 11, fontFamily: "JetBrains Mono" }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`} width={50} />
+              <Tooltip
+                contentStyle={{
+                  background: "#0A0A0A",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 12,
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 12,
+                }}
+                labelStyle={{ color: "#a1a1aa" }}
+                formatter={(v) => [`$${Number(v).toLocaleString()}`, "Value"]}
+              />
+              <Area type="monotone" dataKey="value" stroke="#C8102E" strokeWidth={2.5} fill="url(#chartGrad)" />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </motion.div>
 
-      {/* 2-col: Active Investments + Recent Transactions */}
+      {/* Active investments + recent transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+        <Panel
+          icon={<Rocket size={20} weight="duotone" />}
+          title="Active Investments"
+          cta={{ to: "/dashboard/plans", label: "New investment", testid: "goto-plans" }}
+          testid="active-investments-panel"
+          delay={0.3}
         >
-          <Panel
-            icon={<Rocket size={20} weight="duotone" />}
-            title="Active Investments"
-            cta={{ to: "/dashboard/plans", label: "New investment →", testid: "goto-plans" }}
-            testid="active-investments-panel"
-          >
-            {investments.filter((i) => i.status === "active").length === 0 ? (
-              <EmptyState
-                icon={<Rocket size={48} weight="light" />}
-                msg="No active investments yet."
-                cta="/dashboard/plans"
-                label="Explore plans"
-              />
-            ) : (
-              <div className="space-y-3">
-                {investments
-                  .filter((i) => i.status === "active")
-                  .slice(0, 4)
-                  .map((inv, idx) => (
-                    <motion.div
-                      key={inv.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: idx * 0.05 }}
-                      className="group relative p-4 border border-white/5 hover:border-[#C8102E]/50 bg-[#0A0A0A] hover:bg-[#0F0F0F] transition-all duration-300"
-                      data-testid={`inv-${inv.id}`}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-[#C8102E]/0 via-[#C8102E]/5 to-[#C8102E]/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-                      <div className="relative flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse" />
-                            <div className="text-sm font-semibold">{inv.plan_name}</div>
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
-                            <span className="flex items-center gap-1">
-                              <Lightning size={12} weight="bold" />
-                              {inv.daily_roi}% daily
-                            </span>
-                            <span className="w-px h-3 bg-white/10" />
-                            <span className="flex items-center gap-1">
-                              <Clock size={12} weight="bold" />
-                              {inv.duration_days}d
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="text-right">
-                          <div className="font-mono text-base font-semibold">{money(inv.amount_usd)}</div>
-                          <div className="flex items-center justify-end gap-1 text-xs text-[#C8102E] font-mono">
-                            <ArrowUpRight size={12} weight="bold" />
-                            +{money(inv.earnings)}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+          {investments.filter((i) => i.status === "active").length === 0 && (
+            <EmptyState
+              icon={<Rocket size={40} weight="light" />}
+              msg="No active investments yet."
+              cta="/dashboard/plans"
+              label="Explore plans"
+            />
+          )}
+          <div className="space-y-3">
+            {investments.filter((i) => i.status === "active").slice(0, 4).map((inv) => (
+              <div
+                key={inv.id}
+                className="rounded-2xl border border-white/5 bg-[#0C0C0C] p-4 transition-colors hover:border-[#C8102E]/40"
+                data-testid={`inv-${inv.id}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+                      <div className="text-sm font-semibold">{inv.plan_name}</div>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-[11px] font-mono text-zinc-400">
+                      <span className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1">
+                        <Lightning size={12} weight="bold" className="text-amber-400" />
+                        {inv.daily_roi}% daily
+                      </span>
+                      <span className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1">
+                        <Clock size={12} weight="bold" className="text-zinc-500" />
+                        {inv.duration_days}d
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono text-sm font-semibold">{money(inv.amount_usd)}</div>
+                    <div className="mt-1 flex items-center justify-end gap-1 text-xs font-mono text-green-400">
+                      <ArrowUpRight size={12} weight="bold" />
+                      +{money(inv.earnings)}
+                    </div>
+                  </div>
+                </div>
               </div>
-            )}
-          </Panel>
-        </motion.div>
+            ))}
+          </div>
+        </Panel>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
+        <Panel
+          icon={<Receipt size={20} weight="duotone" />}
+          title="Recent Transactions"
+          cta={{ to: "/dashboard/transactions", label: "View all", testid: "goto-transactions" }}
+          testid="recent-tx-panel"
+          delay={0.35}
         >
-          <Panel
-            icon={<ArrowsClockwise size={20} weight="duotone" />}
-            title="Recent Transactions"
-            cta={{ to: "/dashboard/transactions", label: "View all →", testid: "goto-transactions" }}
-            testid="recent-tx-panel"
-          >
-            {txs.length === 0 ? (
-              <EmptyState
-                icon={<Wallet size={48} weight="light" />}
-                msg="No transactions yet."
-                cta="/dashboard/deposit"
-                label="Make a deposit"
-              />
-            ) : (
-              <div className="space-y-1">
-                {txs.slice(0, 5).map((t, idx) => (
-                  <motion.div
-                    key={t.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: idx * 0.05 }}
-                    className="group flex items-center justify-between p-3 border-b border-white/5 last:border-b-0 hover:bg-[#0A0A0A] transition-colors"
-                    data-testid={`tx-row-${t.id}`}
-                  >
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${t.type === "deposit"
-                        ? "bg-[#C8102E]/10 text-[#C8102E]"
-                        : t.type === "withdraw"
-                          ? "bg-orange-500/10 text-orange-500"
-                          : "bg-blue-500/10 text-blue-400"
-                        }`}>
-                        {t.type === "deposit" && <ArrowDownRight size={18} weight="bold" />}
-                        {t.type === "withdraw" && <ArrowUpRight size={18} weight="bold" />}
-                        {t.type === "invest" && <TrendUp size={18} weight="bold" />}
-                      </div>
-
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold capitalize">{t.type}</div>
-                        <div className="text-xs text-zinc-500 font-mono flex items-center gap-1 mt-0.5">
-                          <Clock size={10} weight="bold" />
-                          {new Date(t.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="font-mono text-base font-semibold">{money(t.amount_usd)}</div>
-                      <StatusBadge status={t.status} />
-                    </div>
-                  </motion.div>
-                ))}
+          {txs.length === 0 && (
+            <EmptyState
+              icon={<Receipt size={40} weight="light" />}
+              msg="No transactions yet."
+              cta="/dashboard/deposit"
+              label="Make a deposit"
+            />
+          )}
+          <div className="space-y-2">
+            {txs.slice(0, 5).map((t) => (
+              <div
+                key={t.id}
+                className="flex items-center justify-between rounded-2xl border border-white/5 bg-[#0C0C0C] p-3 transition-colors hover:border-white/15"
+                data-testid={`tx-row-${t.id}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${t.type === "deposit"
+                    ? "bg-green-500/10 text-green-400"
+                    : t.type === "withdraw"
+                      ? "bg-amber-500/10 text-amber-400"
+                      : "bg-blue-500/10 text-blue-400"
+                    }`}>
+                    {t.type === "deposit" && <ArrowDownRight size={20} weight="duotone" />}
+                    {t.type === "withdraw" && <ArrowUpRight size={20} weight="duotone" />}
+                    {t.type === "invest" && <TrendUp size={20} weight="duotone" />}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold capitalize">{t.type}</div>
+                    <div className="text-xs text-zinc-500 font-mono">{new Date(t.created_at).toLocaleDateString()}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono text-sm font-semibold">{money(t.amount_usd)}</div>
+                  <StatusBadge status={t.status} />
+                </div>
               </div>
-            )}
-          </Panel>
-        </motion.div>
+            ))}
+          </div>
+        </Panel>
       </div>
     </div>
   );
 }
 
-function StatCard({ icon, label, value, positive, accent, big, testid, trend, activeInvestments }) {
+function StatTile({ icon, tint, value, label, testid, delay = 0 }) {
   return (
-    <div
-      className={`relative group hairline p-6 transition-all duration-300 overflow-hidden ${accent
-        ? "bg-gradient-to-br from-[#C8102E]/10 via-[#0F0F0F] to-[#0A0A0A] hover:from-[#C8102E]/20"
-        : "bg-[#0F0F0F] hover:bg-[#121212]"
-        }`}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="flex items-center gap-3 md:gap-4 rounded-2xl border border-white/5 bg-[#101010] p-4 md:p-5 transition-colors hover:border-white/15"
       data-testid={testid}
     >
-      {/* Decorative corner accent */}
-      <div className={`absolute top-0 right-0 w-32 h-32 opacity-20 pointer-events-none ${accent ? "bg-[#C8102E]/20" : "bg-white/5"
-        } blur-3xl -translate-y-1/2 translate-x-1/2 rounded-full`} />
-
-      <div className="relative">
-        <div className="flex items-start justify-between mb-4">
-          <div className={`flex items-center justify-center w-12 h-12 rounded-lg ${accent
-            ? "bg-[#C8102E]/20 text-[#C8102E]"
-            : positive
-              ? "bg-[#C8102E]/10 text-[#C8102E]"
-              : "bg-white/5 text-zinc-400"
-            }`}>
-            {icon}
-          </div>
-
-          {trend && (
-            <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-mono ${Number(trend) >= 0
-              ? "bg-[#C8102E]/10 text-[#C8102E]"
-              : "bg-red-500/10 text-red-500"
-              }`}>
-              {Number(trend) >= 0 ? (
-                <ArrowUpRight size={12} weight="bold" />
-              ) : (
-                <ArrowDownRight size={12} weight="bold" />
-              )}
-              {trend}%
-            </div>
-          )}
-        </div>
-
-        <div className="text-xs uppercase tracking-widest text-zinc-500 font-mono mb-2">
+      <div className={`flex h-12 w-12 md:h-14 md:w-14 shrink-0 items-center justify-center rounded-xl ${tint}`}>
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <div className="font-mono text-lg md:text-2xl font-bold truncate">{value}</div>
+        <div className="mt-0.5 text-[10px] md:text-xs uppercase tracking-widest text-zinc-500 font-mono">
           {label}
         </div>
-
-        <div className={`font-mono font-bold tracking-tight ${big ? "text-4xl md:text-5xl" : "text-3xl md:text-4xl"
-          } ${positive ? "text-[#C8102E]" : "text-white"}`}>
-          {value}
-        </div>
-
-        {activeInvestments !== undefined && (
-          <div className="mt-2 text-xs text-zinc-500 font-mono">
-            {activeInvestments} active position{activeInvestments !== 1 ? 's' : ''}
-          </div>
-        )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function Panel({ icon, title, cta, children, testid }) {
+function Panel({ icon, title, cta, children, testid, delay = 0 }) {
   return (
-    <div className="relative hairline bg-gradient-to-br from-[#0F0F0F] via-[#0A0A0A] to-[#0F0F0F] p-6 overflow-hidden" data-testid={testid}>
-      {/* Subtle grid pattern */}
-      <div className="absolute inset-0 grid-lines opacity-10 pointer-events-none" />
-
-      <div className="relative">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/5 text-zinc-400">
-              {icon}
-            </div>
-            <div className="text-sm uppercase tracking-widest text-zinc-400 font-mono font-semibold">
-              {title}
-            </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="rounded-3xl border border-white/5 bg-[#101010] p-5 md:p-6"
+      data-testid={testid}
+    >
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#C8102E]/10 text-[#C8102E]">
+            {icon}
           </div>
-
-          {cta && (
-            <Link
-              to={cta.to}
-              data-testid={cta.testid}
-              className="group flex items-center gap-1 text-xs text-[#C8102E] hover:text-[#E01B3D] font-mono transition-colors"
-            >
-              {cta.label}
-              <ArrowUpRight
-                size={14}
-                weight="bold"
-                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-              />
-            </Link>
-          )}
+          <div className="text-sm uppercase tracking-widest text-zinc-400 font-mono font-semibold">
+            {title}
+          </div>
         </div>
-
-        {children}
+        {cta && (
+          <Link
+            to={cta.to}
+            data-testid={cta.testid}
+            className="flex items-center gap-1 text-xs font-mono text-[#C8102E] transition-colors hover:text-[#E01B3D]"
+          >
+            {cta.label} <ArrowUpRight size={14} weight="bold" />
+          </Link>
+        )}
       </div>
-    </div>
+      {children}
+    </motion.div>
   );
 }
 
 export function StatusBadge({ status }) {
-  const config = {
-    pending: {
-      icon: <CircleNotch size={10} weight="bold" />,
-      styles: "text-[#FF9500] border-[#FF9500]/30 bg-[#FF9500]/10",
-    },
-    approved: {
-      icon: <CheckCircle size={10} weight="bold" />,
-      styles: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/10",
-    },
-    completed: {
-      icon: <CheckCircle size={10} weight="bold" />,
-      styles: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/10",
-    },
-    rejected: {
-      icon: <XCircle size={10} weight="bold" />,
-      styles: "text-[#FF3B30] border-[#FF3B30]/30 bg-[#FF3B30]/10",
-    },
-    active: {
-      icon: <CheckCircle size={10} weight="bold" />,
-      styles: "text-[#C8102E] border-[#C8102E]/30 bg-[#C8102E]/10",
-    },
+  const styles = {
+    pending: "text-amber-400 border-amber-400/30 bg-amber-400/10",
+    approved: "text-green-400 border-green-400/30 bg-green-400/10",
+    completed: "text-green-400 border-green-400/30 bg-green-400/10",
+    rejected: "text-red-400 border-red-400/30 bg-red-400/10",
+    active: "text-green-400 border-green-400/30 bg-green-400/10",
   };
-
-  const { icon, styles } = config[status] || {
-    icon: null,
-    styles: "text-zinc-400 border-white/10 bg-white/5",
-  };
-
   return (
-    <span
-      className={`inline-flex items-center gap-1 text-[10px] font-mono uppercase px-2 py-0.5 border ${styles}`}
-    >
-      {icon}
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] font-mono uppercase ${styles[status] || "text-zinc-400 border-white/10 bg-white/5"}`}>
+      <span className="h-1 w-1 rounded-full bg-current" />
       {status}
     </span>
   );
@@ -502,18 +428,12 @@ export function StatusBadge({ status }) {
 
 function EmptyState({ icon, msg, cta, label }) {
   return (
-    <div className="py-12 text-center">
-      <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 text-zinc-600">
-        {icon}
-      </div>
-      <div className="text-sm text-zinc-500 mb-4">{msg}</div>
+    <div className="rounded-2xl border border-dashed border-white/10 py-10 text-center">
+      <div className="flex justify-center text-zinc-600 mb-3">{icon}</div>
+      <div className="text-sm text-zinc-500">{msg}</div>
       {cta && (
-        <Link
-          to={cta}
-          className="inline-flex items-center gap-2 text-[#C8102E] hover:text-[#E01B3D] text-sm font-mono transition-colors"
-        >
-          {label}
-          <ArrowUpRight size={14} weight="bold" />
+        <Link to={cta} className="mt-3 inline-flex items-center gap-1 text-sm font-mono text-[#C8102E] hover:text-[#E01B3D]">
+          {label} <ArrowUpRight size={14} weight="bold" />
         </Link>
       )}
     </div>
