@@ -20,7 +20,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { http, money } from "@/lib/api";
 
 const HERO_IMAGES = [
-  "/car.avif",  // ← was "frontend-vite\public\car.avif"
+  "/car.avif",
   "https://images.pexels.com/photos/2166/flight-sky-earth-space.jpg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1400",
   "https://images.pexels.com/photos/34521/space-shuttle-lift-off-liftoff-nasa.jpg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1400",
   "https://images.pexels.com/photos/73872/rocket-launch-rocket-take-off-nasa-73872.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=900&w=1400",
@@ -32,8 +32,6 @@ const AVATARS = [
   "https://images.pexels.com/photos/26872232/pexels-photo-26872232.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
 ];
 
-// Demo hero stats - purely illustrative placeholder numbers, edit freely.
-// They animate up from 0 the first time they scroll into view.
 const HERO_STATS = [
   { target: 2.4, decimals: 1, prefix: "$", suffix: "B", label: "Assets under mgmt" },
   { target: 48, decimals: 0, prefix: "", suffix: "K+", label: "Active investors" },
@@ -74,6 +72,31 @@ const TESTIMONIALS = [
   },
 ];
 
+// --- NEW: FAQ Data ---
+const FAQS = [
+  {
+    question: "How do we increase your money?",
+    answer:
+      "We deploy capital across a globally diversified portfolio of high-yield digital assets, algorithmic trading strategies, and short-term arbitrage opportunities. Our proprietary quantitative models execute thousands of micro-trades daily to capture market inefficiencies, generating consistent, compounding returns for our investors.",
+  },
+  {
+    question: "How do we use stocks for our benefit?",
+    answer:
+      "We utilize a hybrid strategy that pairs high-volatility crypto allocations with stable, dividend-yielding blue-chip equities. By leveraging options contracts, delta-neutral positioning, and dividend capture strategies in the stock market, we hedge against market downturns while generating a steady baseline yield that supplements our aggressive trading profits.",
+  },
+  {
+    question: "Is my investment secure?",
+    answer:
+      "Absolutely. All principal and generated yields are held in institutional-grade, cold-storage wallets protected by multi-signature security protocols and managed via Fireblocks. Furthermore, our platform infrastructure is fully SOC-2 audited, and user assets are insured up to $250M by Lloyd's of London.",
+  },
+  {
+    question: "How do withdrawals and compounding work?",
+    answer:
+      "Your daily ROI is automatically reinvested (compounded) by default to maximize long-term growth, though you can toggle this to withdraw daily profits. Once your plan's initial lock-up period concludes, you can request a full or partial withdrawal at any time. Funds are typically processed within 24 hours with zero platform withdrawal fees.",
+  },
+];
+// ---------------------
+
 export default function Landing() {
   const [plans, setPlans] = useState([]);
   const [heroImgIndex, setHeroImgIndex] = useState(0);
@@ -104,7 +127,6 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="relative pt-24 md:pt-32 overflow-hidden">
-        {/* background layers — rotating images kept, just dimmer so the poster reads */}
         <div className="absolute inset-0 grid-lines opacity-40" />
         <AnimatePresence mode="sync">
           <motion.img
@@ -122,7 +144,6 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/70 via-[#050505]/40 to-[#050505]" />
 
         <div className="relative flex flex-col items-center text-center px-6">
-          {/* AV monogram */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -131,7 +152,6 @@ export default function Landing() {
             <AVMonogram className="w-[260px] md:w-[360px]" />
           </motion.div>
 
-          {/* ASTROWEALTH wordmark */}
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -142,7 +162,6 @@ export default function Landing() {
             <span className="text-[#C8102E]">WEALTH</span>
           </motion.h1>
 
-          {/* VENTURES with side rules */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +175,6 @@ export default function Landing() {
             <span className="h-px w-14 md:w-24 bg-gradient-to-l from-transparent to-[#C8102E]" />
           </motion.div>
 
-          {/* tagline */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -166,7 +184,6 @@ export default function Landing() {
             INVESTING TODAY. BUILDING TOMORROW.
           </motion.p>
 
-          {/* SpaceX | Tesla row */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -184,7 +201,6 @@ export default function Landing() {
           </motion.div>
         </div>
 
-        {/* earth horizon with red sunrise */}
         <div className="relative mt-14 md:mt-20 h-40 md:h-56 overflow-hidden pointer-events-none select-none">
           <div
             className="absolute left-1/2 top-10 -translate-x-1/2 w-[2400px] h-[2400px] rounded-full"
@@ -200,7 +216,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* stats moved out of the hero so the poster stays clean */}
       <section className="border-y border-white/5 bg-[#050505]">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5">
           {HERO_STATS.map((s) => (
@@ -393,6 +408,27 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* --- NEW: FAQ Section --- */}
+      <section id="faq" className="py-24 md:py-32 border-t border-white/5 bg-[#050505] relative">
+        <div className="max-w-4xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16">
+            <div className="text-xs uppercase tracking-widest text-[#C8102E] font-mono mb-4">
+              ◆ Frequently asked questions
+            </div>
+            <h2 className="font-display font-bold text-4xl md:text-5xl tracking-tight">
+              Everything you need to <span className="text-[#C8102E]">know.</span>
+            </h2>
+          </div>
+
+          <div className="border-t border-white/10">
+            {FAQS.map((faq, i) => (
+              <FAQItem key={i} question={faq.question} answer={faq.answer} />
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* ------------------------ */}
+
       {/* CTA */}
       <section className="py-32 md:py-48 border-t border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 grid-lines opacity-40" />
@@ -421,6 +457,49 @@ export default function Landing() {
     </div>
   );
 }
+
+// --- NEW: FAQ Item Component ---
+function FAQItem({ question, answer }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="border-b border-white/10">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center justify-between py-6 text-left group"
+      >
+        <span className="text-lg md:text-xl font-medium text-white group-hover:text-[#C8102E] transition-colors">
+          {question}
+        </span>
+        <motion.div
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 text-[#C8102E] group-hover:border-[#C8102E] transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 1V15M1 8H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </motion.div>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <p className="pb-6 text-zinc-400 leading-relaxed text-sm md:text-base pr-12">
+              {answer}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+// -------------------------------
 
 function AnimatedStat({ target, decimals = 0, prefix = "", suffix = "", label }) {
   const ref = useRef(null);
@@ -504,27 +583,10 @@ function AVMonogram({ className = "" }) {
           <stop offset="1" stopColor="#C8102E" />
         </linearGradient>
       </defs>
-
-      {/* A */}
-      <path
-        d="M128 30 L155 30 L215 244 L185 244 L141 96 L103 244 L60 244 L56 234 L74 234 Z"
-        fill="url(#av-a)"
-      />
-      {/* V */}
-      <path
-        d="M240 60 L305 60 L305 72 L285 72 L330 208 L372 72 L352 72 L352 60 L415 60 L415 72 L398 72 L340 250 L322 250 L262 72 L240 72 Z"
-        fill="url(#av-v)"
-      />
-      {/* orbit swoosh */}
-      <path
-        d="M18 252 C 160 224, 320 150, 448 34 C 330 160, 170 232, 20 262 Z"
-        fill="url(#av-swoosh)"
-      />
-      {/* star */}
-      <path
-        d="M452 6 C454 20 458 24 472 26 C458 28 454 32 452 46 C450 32 446 28 432 26 C446 24 450 20 452 6 Z"
-        fill="#fff"
-      />
+      <path d="M128 30 L155 30 L215 244 L185 244 L141 96 L103 244 L60 244 L56 234 L74 234 Z" fill="url(#av-a)" />
+      <path d="M240 60 L305 60 L305 72 L285 72 L330 208 L372 72 L352 72 L352 60 L415 60 L415 72 L398 72 L340 250 L322 250 L262 72 L240 72 Z" fill="url(#av-v)" />
+      <path d="M18 252 C 160 224, 320 150, 448 34 C 330 160, 170 232, 20 262 Z" fill="url(#av-swoosh)" />
+      <path d="M452 6 C454 20 458 24 472 26 C458 28 454 32 452 46 C450 32 446 28 432 26 C446 24 450 20 452 6 Z" fill="#fff" />
     </svg>
   );
 }
@@ -535,7 +597,6 @@ function SpaceXLogo({ className = "" }) {
       SPACE
       <span className="relative">
         X
-        {/* the little swoosh flying off the X */}
         <svg viewBox="0 0 60 20" className="absolute left-[0.1em] -top-[0.45em] w-[2.6em]" fill="none">
           <path d="M2 18 C 20 13, 40 6, 58 1 C 40 9, 22 15, 4 20 Z" fill="currentColor" />
         </svg>

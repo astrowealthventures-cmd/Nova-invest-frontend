@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { http, money, fmtError } from "@/lib/api";
 import { toast } from "sonner";
 import {
@@ -7,8 +7,11 @@ import {
   Clock,
   Coins,
   Copy,
+  Image as ImageIcon,
   QrCode,
   Receipt,
+  Upload,
+  X,
 } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { StatusBadge } from "@/pages/dashboard/Overview";
@@ -22,14 +25,50 @@ const ASSETS = [
 const assetMeta = (id) =>
   ASSETS.find((a) => a.id === id) || { symbol: "•", tint: "bg-white/5 text-zinc-400" };
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+// Uploads a file directly to Cloudinary using a signature issued by the backend.
+// Returns the Cloudinary secure_url to be saved on the deposit record.
+async function uploadToCloudinary(file) {
+  // 1. Ask Spring Boot for a signed upload signature
+  const sigRes = await http.get("/cloudinary/signature");
+  console.log(sigRes);
+  const { signature, timestamp, apiKey, cloudName, folder } = sigRes.data;
+
+  // 2. Upload the file directly to Cloudinary (never touches our backend)
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", apiKey);
+  formData.append("timestamp", timestamp);
+  formData.append("signature", signature);
+  formData.append("folder", folder);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("Screenshot upload failed. Please try again.");
+  }
+
+  const data = await res.json();
+  return data.secure_url;
+}
+
 export default function Deposit() {
   const [wallets, setWallets] = useState({});
   const [asset, setAsset] = useState("USDT");
   const [amount, setAmount] = useState("");
-  const [txHash, setTxHash] = useState("");
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Screenshot upload state
+  const [proofFile, setProofFile] = useState(null);
+  const [proofPreview, setProofPreview] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   const load = async () => {
     const [w, d] = await Promise.all([http.get("/deposits/wallets"), http.get("/deposits")]);
@@ -45,28 +84,70 @@ export default function Deposit() {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const handleFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image (PNG, JPG, or WEBP).");
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File too large. Max 5MB.");
+      return;
+    }
+    setProofFile(file);
+    setProofPreview(URL.createObjectURL(file));
+  };
+
+  const clearProof = () => {
+    if (proofPreview) URL.revokeObjectURL(proofPreview);
+    setProofFile(null);
+    setProofPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (file) handleFile(file);
+  };
+
   const submit = async (e) => {
     e.preventDefault();
+    if (!proofFile) {
+      toast.error("Please upload a screenshot of your transaction.");
+      return;
+    }
     setLoading(true);
     try {
+      // 1. Upload screenshot to Cloudinary first, get back a URL
+      const receiptUrl = await uploadToCloudinary(proofFile);
+
+      // 2. Send deposit data + the Cloudinary URL to the backend as JSON
       await http.post("/deposits", {
         asset,
         amount_usd: parseFloat(amount),
-        tx_hash: txHash,
+        receipt_url: receiptUrl,
       });
+
       toast.success("Deposit submitted. Awaiting admin approval.");
       setAmount("");
-      setTxHash("");
+      clearProof();
       load();
     } catch (e) {
-      toast.error(fmtError(e.response?.data?.detail) || "Failed");
+      toast.error(fmtError(e.response?.data?.detail) || e.message || "Failed");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (proofPreview) URL.revokeObjectURL(proofPreview);
+    };
+  }, [proofPreview]);
+
   const qr = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=0F0F0F&color=C8102E&data=${encodeURIComponent(wallets[asset] || "")}`;
-  const meta = assetMeta(asset);
 
   return (
     <div className="space-y-6 md:space-y-8" data-testid="page-deposit">
@@ -74,7 +155,7 @@ export default function Deposit() {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="font-display font-bold text-3xl md:text-5xl tracking-tight">Deposit</h1>
         <p className="text-zinc-400 mt-2 text-sm md:text-base">
-          Fund your account with crypto — confirmed on-chain.
+          Fund your account with crypto — upload a screenshot to confirm your transfer.
         </p>
       </motion.div>
 
@@ -161,13 +242,13 @@ export default function Deposit() {
 
               <div className="mt-4 flex items-start gap-2 text-xs text-zinc-500 leading-relaxed">
                 <Clock size={14} weight="bold" className="mt-0.5 shrink-0 text-zinc-600" />
-                Send only {asset} to this address. After sending, submit the transaction hash to credit your account.
+                Send {asset} to this address, then upload a screenshot of the transaction on the right to confirm.
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Confirm deposit form */}
+        {/* Confirm deposit form with file upload */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0, y: 20 }}
@@ -201,34 +282,82 @@ export default function Deposit() {
             />
           </label>
 
-          <label className="block">
+          {/* Screenshot upload */}
+          <div>
             <span className="mb-2 block text-xs uppercase tracking-widest text-zinc-500 font-mono">
-              Transaction hash
+              Transaction proof
             </span>
+
+            {proofPreview ? (
+              <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A]">
+                <img
+                  src={proofPreview}
+                  alt="Proof preview"
+                  className="h-48 w-full object-cover"
+                  data-testid="deposit-proof-preview"
+                />
+                <button
+                  type="button"
+                  onClick={clearProof}
+                  className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-sm transition-colors hover:bg-[#C8102E]"
+                  aria-label="Remove image"
+                >
+                  <X size={16} weight="bold" />
+                </button>
+                <div className="flex items-center justify-between border-t border-white/5 px-3 py-2 text-xs font-mono text-zinc-400">
+                  <span className="truncate max-w-[70%]">{proofFile?.name}</span>
+                  <span>{proofFile ? Math.round(proofFile.size / 1024) : 0} KB</span>
+                </div>
+              </div>
+            ) : (
+              <div
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={onDrop}
+                onClick={() => fileInputRef.current?.click()}
+                data-testid="deposit-proof-dropzone"
+                className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-4 py-8 text-center transition-all ${isDragging
+                  ? "border-[#C8102E] bg-[#C8102E]/10"
+                  : "border-white/10 bg-[#0A0A0A] hover:border-white/30 hover:bg-[#0F0F0F]"
+                  }`}
+              >
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl transition-colors ${isDragging ? "bg-[#C8102E]/20 text-[#C8102E]" : "bg-white/5 text-zinc-400"
+                  }`}>
+                  <Upload size={22} weight="duotone" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-white">
+                    Drop screenshot here
+                  </div>
+                  <div className="mt-1 text-xs text-zinc-500">
+                    or <span className="text-[#C8102E]">browse files</span> · PNG, JPG, WEBP · Max 5MB
+                  </div>
+                </div>
+              </div>
+            )}
+
             <input
-              type="text"
-              required
-              minLength={6}
-              value={txHash}
-              onChange={(e) => setTxHash(e.target.value)}
-              placeholder="0x..."
-              data-testid="deposit-txhash-input"
-              className="w-full rounded-xl border border-white/10 bg-[#0A0A0A] px-4 py-3 font-mono text-sm outline-none transition-colors focus:border-[#C8102E] placeholder:text-zinc-700"
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/jpg"
+              onChange={(e) => handleFile(e.target.files?.[0])}
+              data-testid="deposit-proof-input"
+              className="hidden"
             />
-          </label>
+          </div>
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !proofFile}
             data-testid="deposit-submit-btn"
-            className="w-full rounded-xl bg-[#C8102E] py-3.5 font-semibold text-white transition-colors hover:bg-[#E01B3D] disabled:opacity-50"
+            className="w-full rounded-xl bg-[#C8102E] py-3.5 font-semibold text-white transition-colors hover:bg-[#E01B3D] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Submitting..." : "Submit deposit"}
           </button>
 
           <div className="flex items-start gap-2 text-xs text-zinc-500 leading-relaxed">
             <Clock size={14} weight="bold" className="mt-0.5 shrink-0 text-zinc-600" />
-            Deposits are typically approved within 15 minutes after network confirmations.
+            Deposits are typically approved within 15 minutes after admin reviews your proof.
           </div>
         </motion.form>
       </div>
@@ -253,6 +382,7 @@ export default function Deposit() {
         {deposits.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 py-10 text-center">
             <div className="mb-3 flex justify-center text-zinc-600">
+              <ImageIcon size={40} weight="light" />
             </div>
             <div className="text-sm text-zinc-500">No deposits yet.</div>
           </div>
@@ -260,6 +390,7 @@ export default function Deposit() {
           <div className="space-y-2">
             {deposits.map((d) => {
               const m = assetMeta(d.asset);
+              const proofUrl = d.receipt_url || d.proof_url || d.tx_hash_url;
               return (
                 <div
                   key={d.id}
@@ -282,12 +413,19 @@ export default function Deposit() {
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-3 min-w-0">
-                    <div
-                      className="font-mono text-xs text-zinc-500 truncate max-w-[140px] md:max-w-[220px]"
-                      title={d.tx_hash}
-                    >
-                      {d.tx_hash}
-                    </div>
+                    {proofUrl ? (
+                      <a
+                        href={proofUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-mono text-zinc-300 transition-colors hover:border-[#C8102E] hover:text-[#C8102E]"
+                      >
+                        <ImageIcon size={14} weight="bold" />
+                        View proof
+                      </a>
+                    ) : (
+                      <span className="text-xs font-mono text-zinc-600">—</span>
+                    )}
                     <StatusBadge status={d.status} />
                   </div>
                 </div>

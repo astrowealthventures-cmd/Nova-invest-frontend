@@ -62,6 +62,7 @@ export default function Overview() {
     ? ((summary.earnings / (summary.total_deposits || 1)) * 100).toFixed(2)
     : "0.00";
 
+  console.log(user);
   return (
     <div className="space-y-6 md:space-y-8" data-testid="dashboard-overview">
       {/* Welcome bonus banner */}
@@ -97,7 +98,7 @@ export default function Overview() {
         transition={{ delay: 0.05 }}
       >
         <h1 className="font-display font-bold text-3xl md:text-5xl tracking-tight">
-          Welcome back, <span className="text-[#C8102E]">{user?.name?.split(" ")[0]}</span>
+          Welcome back, <span className="text-[#C8102E]">{user?.first_name}</span>
         </h1>
         <div className="mt-2 text-sm md:text-base text-zinc-500">
           {new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}

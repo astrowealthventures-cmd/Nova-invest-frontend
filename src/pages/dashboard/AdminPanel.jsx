@@ -5,6 +5,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Check,
+  Image as ImageIcon,
   ShieldStar,
   X,
 } from "@phosphor-icons/react";
@@ -23,6 +24,7 @@ const assetMeta = (id) =>
 export default function AdminPanel() {
   const [deposits, setDeposits] = useState([]);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   const load = async () => {
     const [d, w] = await Promise.all([http.get("/deposits"), http.get("/withdrawals")]);
@@ -95,6 +97,7 @@ export default function AdminPanel() {
           <div className="space-y-2">
             {deposits.map((d) => {
               const m = assetMeta(d.asset);
+              const receiptUrl = d.receipt_url || d.proof_url;
               return (
                 <div
                   key={d.id}
@@ -116,6 +119,27 @@ export default function AdminPanel() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Receipt screenshot thumbnail */}
+                  {receiptUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => setPreviewUrl(receiptUrl)}
+                      data-testid={`admin-receipt-thumb-${d.id}`}
+                      className="shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#0A0A0A] transition-colors hover:border-[#C8102E]"
+                      title="View screenshot"
+                    >
+                      <img
+                        src={receiptUrl}
+                        alt="Deposit receipt"
+                        className="h-16 w-24 object-cover"
+                      />
+                    </button>
+                  ) : (
+                    <div className="flex h-16 w-24 shrink-0 items-center justify-center rounded-xl border border-dashed border-white/10 bg-[#0A0A0A] text-zinc-700">
+                      <ImageIcon size={20} weight="light" />
+                    </div>
+                  )}
 
                   {/* Hash + status + actions */}
                   <div className="flex flex-wrap items-center gap-3">
@@ -217,6 +241,29 @@ export default function AdminPanel() {
           </div>
         )}
       </motion.div>
+
+      {/* Full-size receipt preview modal */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <div className="relative max-h-[85vh] max-w-3xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setPreviewUrl(null)}
+              className="absolute -top-10 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#C8102E]"
+              aria-label="Close preview"
+            >
+              <X size={18} weight="bold" />
+            </button>
+            <img
+              src={previewUrl}
+              alt="Deposit receipt full size"
+              className="max-h-[85vh] w-auto rounded-2xl border border-white/10 object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

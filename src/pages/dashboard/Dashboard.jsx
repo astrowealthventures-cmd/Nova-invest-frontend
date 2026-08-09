@@ -183,7 +183,7 @@ export default function Dashboard() {
             </div>
             {(!collapsed || mobileOpen) && (
               <div className="min-w-0">
-                <div className="text-sm truncate" data-testid="sidebar-user-name">{user?.name}</div>
+                <div className="text-sm truncate" data-testid="sidebar-user-name">{user?.firtName}</div>
                 <div className="text-xs text-zinc-500 truncate font-mono">{user?.email}</div>
               </div>
             )}

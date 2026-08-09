@@ -39,9 +39,11 @@ export function AuthProvider({ children }) {
     setError("");
     try {
       const { data } = await http.post("/auth/register", {
-        firstName, lastName, email, password, currency, dateOfBirth,
+        first_name: firstName,
+        last_name: lastName,
+        email, password, currency, date_of_birth: dateOfBirth,
       });
-      return data; // don't setUser here — they're not verified/logged in yet
+      return data;
     } catch (e) {
       const msg = fmtError(e.response?.data?.detail) || e.message;
       setError(msg);
