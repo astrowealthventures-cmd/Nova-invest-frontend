@@ -170,35 +170,44 @@ export default function Overview() {
 
         {/* 2x2 stat tiles */}
         <div className="lg:col-span-2 grid grid-cols-2 gap-3 md:gap-4 content-start">
-          <StatTile
-            icon={<ChartLineUp size={24} weight="duotone" />}
-            tint="bg-green-500/10 text-green-400"
-            value={money(summary.earnings)}
-            label="Total Profits"
-            testid="stat-earnings"
-            delay={0.2}
-          />
-          <StatTile
-            icon={<ChartPieSlice size={24} weight="duotone" />}
-            tint="bg-blue-500/10 text-blue-400"
-            value={summary.active_investments}
-            label="Active Plans"
-            delay={0.25}
-          />
-          <StatTile
-            icon={<ArrowDownRight size={24} weight="duotone" />}
-            tint="bg-emerald-500/10 text-emerald-400"
-            value={money(summary.total_deposits)}
-            label="Deposited"
-            delay={0.3}
-          />
-          <StatTile
-            icon={<ArrowUpRight size={24} weight="duotone" />}
-            tint="bg-red-500/10 text-red-400"
-            value={money(withdrawn)}
-            label="Withdrawn"
-            delay={0.35}
-          />
+          <Link to={"/dashboard/"}>
+            <StatTile
+              icon={<ChartLineUp size={24} weight="duotone" />}
+              tint="bg-green-500/10 text-green-400"
+              value={money(summary.earnings)}
+              label="Total Profits"
+              testid="stat-earnings"
+              delay={0.2}
+            />
+          </Link>
+          <Link to={"/dashboard/plans"}>
+            <StatTile
+              icon={<ChartPieSlice size={24} weight="duotone" />}
+              tint="bg-blue-500/10 text-blue-400"
+              value={summary.active_investments}
+              label="Active Plans"
+              delay={0.25}
+            />
+          </Link>
+
+          <Link to={"/dashboard/deposit"}>
+            <StatTile
+              icon={<ArrowDownRight size={24} weight="duotone" />}
+              tint="bg-emerald-500/10 text-emerald-400"
+              value={money(summary.total_deposits)}
+              label="Deposited"
+              delay={0.3}
+            />
+          </Link>
+          <Link to={"/dashboard/withdraw"}>
+            <StatTile
+              icon={<ArrowUpRight size={24} weight="duotone" />}
+              tint="bg-red-500/10 text-red-400"
+              value={money(withdrawn)}
+              label="Withdrawn"
+              delay={0.35}
+            />
+          </Link>
         </div>
       </div>
 
